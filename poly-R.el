@@ -38,7 +38,7 @@
 (require 'polymode)
 
 (defcustom pm-poly/R
-  (pm-polymode :object-name "R"
+  (pm-polymode :name "R"
                :hostmode 'pm-host/R
                :innermodes '(pm-inner/fundamental))
   "R root polymode intended to be inherited from."
@@ -76,7 +76,7 @@
 
 ;; RAPPORT
 (defcustom  pm-inner/rapport-YAML
-  (pm-inner-chunkmode :object-name "rapport-YAML"
+  (pm-inner-chunkmode :name "rapport-YAML"
                       :mode 'yaml-mode
                       :head-matcher "<!--head"
                       :tail-matcher "head-->")
@@ -92,7 +92,7 @@
 
 ;; HTML
 (defcustom  pm-inner/html-R
-  (pm-inner-chunkmode :object-name "html-R"
+  (pm-inner-chunkmode :name "html-R"
                       :mode 'R-mode
                       :head-matcher "<!--[ \t]*begin.rcode"
                       :tail-matcher "end.rcode[ \t]*-->")
@@ -110,7 +110,7 @@
 
 ;;; R-brew
 (defcustom  pm-inner/brew-R
-  (pm-inner-chunkmode :object-name "brew-R"
+  (pm-inner-chunkmode :name "brew-R"
                       :mode 'R-mode
                       :head-matcher "<%[=%]?"
                       :tail-matcher "[#=%=-]?%>")
@@ -142,7 +142,7 @@
     (cons (max 1 (1- end)) end)))
 
 (defcustom  pm-inner/R-C++
-  (pm-inner-chunkmode :object-name "R-C++"
+  (pm-inner-chunkmode :name "R-C++"
                       :mode 'c++-mode
                       :head-mode 'host
                       :head-matcher 'pm--R+C++-head-matcher
@@ -173,7 +173,7 @@
     (cons (match-beginning 0) (match-end 0))))
 
 (defcustom  pm-inner/C++R
-  (pm-inner-chunkmode :object-name "C++R"
+  (pm-inner-chunkmode :name "C++R"
                       :mode 'R-mode
                       :head-matcher 'pm--C++R-head-matcher
                       :tail-matcher 'pm--C++R-tail-matcher)
@@ -191,7 +191,7 @@
 
 ;;; R help
 (defcustom  pm-inner/ess-help-R
-  (pm-inner-chunkmode :object-name "ess-help-R"
+  (pm-inner-chunkmode :name "ess-help-R"
                       :mode 'R-mode
                       :head-matcher "^Examples:"
                       :tail-matcher "\\'"
@@ -228,7 +228,7 @@
     (cons (max 1 (- end 1)) end)))
 
 (defcustom pm-inner/Rd
-  (pm-inner-chunkmode :object-name "R+C++"
+  (pm-inner-chunkmode :name "R+C++"
                       :mode 'R-mode
                       :head-mode 'host
                       :head-matcher 'pm--Rd-examples-head-matcher
@@ -246,7 +246,7 @@
 
 ;; Rmarkdown
 (defcustom pm-exporter/Rmarkdown
-  (pm-shell-exporter :object-name "Rmarkdown"
+  (pm-shell-exporter :name "Rmarkdown"
                      :from
                      '(("Rmarkdown"  "\\.[rR]?md\\|rapport\\'" "R Markdown"
                         "Rscript -e \"rmarkdown::render('%i', output_format = '%t', output_file = '%o')\""))
@@ -320,7 +320,7 @@ block. Thus, output file names don't comply with
 
 ;; KnitR
 (defcustom pm-weaver/knitR
-  (pm-shell-weaver :object-name "knitr"
+  (pm-shell-weaver :name "knitr"
                    :from-to
                    '(("latex" "\\.\\(tex\\|[rR]nw\\)\\'" "tex" "LaTeX" "Rscript -e \"knitr::knit('%i', output='%o')\"")
                      ("html" "\\.x?html?\\'" "html" "HTML" "Rscript -e \"knitr::knit('%i', output='%o')\"")
@@ -373,7 +373,7 @@ block. Thus, output file names don't comply with
 
 ;; Sweave
 (defcustom pm-weaver/Sweave
-  (pm-shell-weaver :object-name "sweave"
+  (pm-shell-weaver :name "sweave"
                    :from-to
                    '(("latex" "\\.\\(tex\\|r?s?nw\\)\\'"
                       "tex" "LaTeX" "R CMD Sweave %i --options=\"output='%o'\"")))
