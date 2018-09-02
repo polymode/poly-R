@@ -53,7 +53,7 @@
   (clone pm-inner/noweb
          :mode 'R-mode)
   "Noweb for R"
-  :group 'poly-inner-modes
+  :group 'poly-innermodes
   :type 'object)
 
 ;;;###autoload (autoload 'poly-noweb+R-mode "poly-R")
@@ -81,7 +81,7 @@
                       :head-matcher "<!--head"
                       :tail-matcher "head-->")
   "YAML header in Rapport files"
-  :group 'poly-inner-modes
+  :group 'poly-innermodes
   :type 'object)
 
 ;;;###autoload (autoload 'poly-rapport-mode "poly-R")
@@ -97,7 +97,7 @@
                       :head-matcher "<!--[ \t]*begin.rcode"
                       :tail-matcher "end.rcode[ \t]*-->")
   "HTML KnitR innermode."
-  :group 'poly-inner-modes
+  :group 'poly-innermodes
   :type 'object)
 
 ;;;###autoload (autoload 'poly-html+R-mode "poly-R")
@@ -115,7 +115,7 @@
                       :head-matcher "<%[=%]?"
                       :tail-matcher "[#=%=-]?%>")
   "Brew R chunk."
-  :group 'poly-inner-modes
+  :group 'poly-innermodes
   :type 'object)
 
 ;;;###autoload (autoload 'poly-brew+R-mode "poly-R")
@@ -149,7 +149,7 @@
                       :tail-matcher 'pm--R+C++-tail-matcher
                       :protect-font-lock nil)
   "HTML KnitR chunk."
-  :group 'poly-inner-modes
+  :group 'poly-innermodes
   :type 'object)
 
 ;;;###autoload (autoload 'poly-R+C++-mode "poly-R")
@@ -198,7 +198,7 @@
                       :indent-offset 5
                       :switch-buffer-functions '(pm--ess-help+R-turn-off-read-only))
   "Ess help R chunk"
-  :group 'poly-inner-modes
+  :group 'poly-innermodes
   :type 'object)
 
 (defun pm--ess-help+R-turn-off-read-only (&rest ignore)
@@ -234,7 +234,7 @@
                       :head-matcher 'pm--Rd-examples-head-matcher
                       :tail-matcher 'pm--Rd-examples-tail-matcher)
   "Rd examples chunk."
-  :group 'poly-inner-modes
+  :group 'poly-innermodes
   :type 'object)
 
 ;;;###autoload (autoload 'poly-Rd-mode "poly-R")
@@ -338,7 +338,7 @@ block. Thus, output file names don't comply with
                           pm-poly/rapport pm-poly/html+R)
 
 (defcustom pm-weaver/knitR-ESS
-  (pm-callback-weaver "knitR-ESS"
+  (pm-callback-weaver :name "knitR-ESS"
                       :from-to
                       '(("latex" "\\.\\(tex\\|rnw\\)\\'" "tex" "LaTeX" "knitr::knit('%I', output='%O')")
                         ("html" "\\.x?html?\\'" "html" "HTML" "knitr::knit('%I', output='%O')")
@@ -358,7 +358,7 @@ block. Thus, output file names don't comply with
                           pm-poly/rapport pm-poly/html+R)
 
 (defcustom pm-weaver/Sweave-ESS
-  (pm-callback-weaver "ESS-Sweave"
+  (pm-callback-weaver :name "ESS-Sweave"
                       :from-to '(("latex" "\\.\\(tex\\|r?s?nw\\)\\'" "tex"
                                   "LaTeX" "Sweave('%I', output='%O')"))
                       :function 'pm--ess-run-command
