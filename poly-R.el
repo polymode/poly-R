@@ -277,7 +277,7 @@ block. Thus, output file names don't comply with
     (output-file #'pm--rmarkdown-output-file-sniffer)))
 
 (defcustom pm-exporter/Rmarkdown-ESS
-  (pm-callback-exporter "Rmarkdown-ESS"
+  (pm-callback-exporter :name "Rmarkdown-ESS"
                         :from
                         '(("Rmarkdown" "\\.[rR]?md\\|rapport\\'" "R Markdown"
                            "rmarkdown::render('%I', output_format = '%t', output_file = '%O', knit_root_dir=getwd())\n"))
