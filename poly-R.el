@@ -397,18 +397,19 @@ block. Thus, output file names don't comply with
     ;; This is getting silly. Ess splits output for optimization reasons. So we
     ;; are collecting output from 3 places:
     ;;   - most recent STRING
-    ;;   - string in accumulation buffer 'accum-buffer-name
+    ;;   - string in accumulation buffer
     ;;   - string already in output buffer
-    (with-current-buffer (process-get proc 'accum-buffer-name)
-      (setq string (concat (buffer-substring (point-min) (point-max))
-                           string)))
+    (with-current-buffer (if (fboundp 'ess--accumulation-buffer)
+                             (ess--accumulation-buffer proc)
+                           (process-get proc 'accum-buffer-name))
+      (setq string (concat (buffer-string) string)))
     (with-current-buffer (process-buffer proc)
       (setq string (concat (buffer-substring (or ess--tb-last-input (comint-previous-prompt)) (point-max))
                            string)))
     (with-temp-buffer
       (insert string)
       (when (string-match-p "Error\\(:\\| +in\\)" string)
-        (error "Errors durring ESS async command"))
+        (user-error "Errors durring ESS async command"))
       (unless (stringp ofile)
         (setq ofile (funcall ofile))))
     ofile))
