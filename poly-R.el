@@ -86,8 +86,9 @@
 
 ;;;###autoload (autoload 'poly-rapport-mode "poly-R")
 (define-polymode poly-rapport-mode poly-markdown+R-mode
-  :add-innermodes '(pm-inner/brew-R
-                    pm-inner/rapport-YAML))
+  ;; !!! FIXME: implement :inherit here (used to be :add-innermodes)
+  :innermodes '(pm-inner/brew-R
+                pm-inner/rapport-YAML))
 
 
 ;; HTML
