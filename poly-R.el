@@ -51,6 +51,7 @@
 
 (defcustom pm-inner/noweb-R
   (clone pm-inner/noweb
+         :name "noweb-R"
          :mode 'R-mode)
   "Noweb for R"
   :group 'poly-innermodes
