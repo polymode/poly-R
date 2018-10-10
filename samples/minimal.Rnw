@@ -18,7 +18,7 @@ A frame with indented chunk.
 \begin{frame}
   <<bar>>=
   v <- 1:10
-  @  
+  @
 \end{frame}
 
 \end{document}

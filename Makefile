@@ -17,7 +17,7 @@ all: compile checkdoc test
 
 build: version clean
 	@echo "******************* BUILDING $(MODULE) *************************"
-	$(EMACSBATCH) --funcall batch-byte-compile *.el
+	$(EMACSBATCH) --load targets/melpa.el --funcall batch-byte-compile *.el
 
 checkdoc: version
 	@echo "******************* CHECKDOC $(MODULE) *************************"
@@ -40,7 +40,7 @@ elpa: melpa
 
 start: version
 	$(EMACSRUN) -L . \
-		--load targets/melpa.el
+		--load targets/melpa.el \
 		--load tests/*.el
 
 test: version
