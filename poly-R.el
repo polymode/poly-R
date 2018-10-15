@@ -387,6 +387,19 @@ block. Thus, output file names don't comply with
                           pm-poly/noweb+R)
 
 
+;; Setup
+
+(defun poly-r-eval-region (beg end msg)
+  (let ((ess-inject-source t))
+    (ess-eval-region beg end nil msg)))
+
+(defun poly-r-mode-setup ()
+  (when (equal ess-dialect "R")
+    (setq-local polymode-eval-region-function #'poly-r-eval-region)))
+
+(add-hook 'ess-mode-hook #'poly-r-mode-setup)
+
+
 ;; ESS command
 (declare-function ess-async-command nil)
 (declare-function ess-force-buffer-current nil)
@@ -433,6 +446,7 @@ block. Thus, output file names don't comply with
   (advice-add 'ess-eval-paragraph :around 'pm-execute-narrowed-to-span)
   (advice-add 'ess-eval-buffer :around 'pm-execute-narrowed-to-span)
   (advice-add 'ess-beginning-of-function :around 'pm-execute-narrowed-to-span))
+
 
 
 ;;; ASSOCIATIONS
