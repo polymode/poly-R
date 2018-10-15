@@ -55,11 +55,9 @@ fac.plu <- switch(fac.ilen, '', 's')%>
 
 **Analysis of Variance** or **ANOVA** is a statistical procedure that tests equality of means for several samples. It was first introduced in 1921 by famous English statistician Sir Ronald Aylmer Fisher.
 
-
 ```r
 ff()
 test <- markdown(chunk)
-
 ```
 
 ```r
