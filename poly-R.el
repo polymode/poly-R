@@ -305,7 +305,7 @@ block. Thus, output file names don't comply with
 (polymode-register-exporter pm-exporter/Rmarkdown-ESS nil
                             pm-poly/markdown pm-poly/rapport)
 
-(defun pm--rmarkdown-callback-auto-selector (action &rest ignore)
+(defun pm--rmarkdown-callback-auto-selector (action &rest _ignore)
   (cl-case action
     (doc "AUTO DETECT")
     ;; last file is not auto-detected unless we cat new line
@@ -318,6 +318,78 @@ block. Thus, output file names don't comply with
     (while (re-search-forward "Output created: +\\(.*\\)" nil t)
       (push (expand-file-name (match-string 1)) files))
     (reverse (delete-dups files))))
+
+(defun pm--rbookdown-input-book-selector (action &rest _ignore)
+  (cl-case action
+    (doc "R Bookdown Book")
+    (match (file-exists-p "_bookdown.yml"))
+    (command "bookdown::render_book('%I', output_format = '%t')\n")))
+
+(defun pm--rbookdown-intput-chapter-selector (action &rest _ignore)
+  (cl-case action
+    (doc "R Bookdown Chapter")
+    (match (file-exists-p "_bookdown.yml"))
+    (command "bookdown::preview_chapter('%I', output_format = '%t')\n")))
+
+(defun pm--rbookdown-output-selector (action id &rest _ignore)
+  (cl-case action
+    (doc id)
+    (output-file #'pm--rmarkdown-output-file-sniffer)
+    (t-spec (format "bookdown::%s" id))))
+
+(defcustom pm-exporter/Rbookdown
+  (pm-callback-exporter :name "Rbookdown-ESS"
+                        :from
+                        '(("Book" . pm--rbookdown-input-book-selector)
+                          ("Chapter" . pm--rbookdown-intput-chapter-selector))
+                        :to
+                        '(("ALL" nil "ALL-CONFIGURED" "all")
+                          ("epub_book" . pm--rbookdown-output-selector)
+                          ("gitbook" . pm--rbookdown-output-selector)
+                          ("html_book" . pm--rbookdown-output-selector)
+                          ("html_document2" . pm--rbookdown-output-selector)
+                          ("pdf_book" . pm--rbookdown-output-selector)
+                          ("pdf_document2" . pm--rbookdown-output-selector)
+                          ("tufte_book2" . pm--rbookdown-output-selector)
+                          ("tufte_handout2" . pm--rbookdown-output-selector)
+                          ("tufte_html2" . pm--rbookdown-output-selector)
+                          ("tufte_html_book" . pm--rbookdown-output-selector)
+                          ("word_document2" . pm--rbookdown-output-selector))
+                        :function 'pm--ess-run-command
+                        :callback 'pm--ess-callback)
+  "R bookdown exporter within ESS process."
+  :group 'polymode-export
+  :type 'object)
+
+(polymode-register-exporter pm-exporter/Rbookdown-ESS nil
+                            pm-poly/markdown+R pm-poly/rapport)
+
+(defcustom pm-exporter/Rbookdown-ESS
+  (pm-callback-exporter :name "Rbookdown-ESS"
+                        :from
+                        '(("Book" . pm--rbookdown-input-book-selector)
+                          ("Chapter" . pm--rbookdown-intput-chapter-selector))
+                        :to
+                        '(("ALL" nil "ALL-CONFIGURED" "all")
+                          ("epub_book" . pm--rbookdown-output-selector)
+                          ("gitbook" . pm--rbookdown-output-selector)
+                          ("html_book" . pm--rbookdown-output-selector)
+                          ("html_document2" . pm--rbookdown-output-selector)
+                          ("pdf_book" . pm--rbookdown-output-selector)
+                          ("pdf_document2" . pm--rbookdown-output-selector)
+                          ("tufte_book2" . pm--rbookdown-output-selector)
+                          ("tufte_handout2" . pm--rbookdown-output-selector)
+                          ("tufte_html2" . pm--rbookdown-output-selector)
+                          ("tufte_html_book" . pm--rbookdown-output-selector)
+                          ("word_document2" . pm--rbookdown-output-selector))
+                        :function 'pm--ess-run-command
+                        :callback 'pm--ess-callback)
+  "R bookdown exporter within ESS process."
+  :group 'polymode-export
+  :type 'object)
+
+(polymode-register-exporter pm-exporter/Rbookdown-ESS nil
+                            pm-poly/markdown+R pm-poly/rapport)
 
 
 ;; KnitR
@@ -425,7 +497,7 @@ block. Thus, output file names don't comply with
       (insert string)
       (when (string-match-p "Error\\(:\\| +in\\)" string)
         (user-error "Errors durring ESS async command"))
-      (unless (stringp ofile)
+      (when (functionp ofile)
         (setq ofile (funcall ofile))))
     ofile))
 
@@ -438,7 +510,8 @@ block. Thus, output file names don't comply with
     (ess-process-put 'callbacks (list callback))
     (ess-process-put 'interruptable? t)
     (ess-process-put 'running-async? t)
-    (ess-eval-linewise command)))
+    (ess-eval-linewise command)
+    (ess-show-buffer (ess-get-process-buffer))))
 
 
 ;; COMPAT
