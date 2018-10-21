@@ -152,10 +152,10 @@ list_templates <-
       (when (< 2000 (length templates))
         (process-put proc :rmarkdown-templates templates)))
     (mapcar (lambda (el)
-              (cons (car el) (mapcar (lambda (t)
-                                       (vector (nth 2 t)
-                                               `(poly-r--rmarkdown-draft ,(nth 0 t) ,(nth 1 t))
-                                               :help (nth 3 t)))
+              (cons (car el) (mapcar (lambda (tlate)
+                                       (vector (nth 2 tlate)
+                                               `(poly-r--rmarkdown-draft ,(nth 0 tlate) ,(nth 1 tlate))
+                                               :help (nth 3 tlate)))
                                      (cdr el))))
             (seq-group-by #'car templates))))
 
@@ -348,7 +348,7 @@ templates at:
   :group 'poly-innermodes
   :type 'object)
 
-(defun pm--ess-help+R-turn-off-read-only (&rest ignore)
+(defun pm--ess-help+R-turn-off-read-only (&rest _ignore)
   ;; don't transfer read only status from main help buffer
   (cl-case pm/type
     (body (read-only-mode -1))
@@ -417,7 +417,7 @@ block. Thus, output file names don't comply with
 (polymode-register-exporter pm-exporter/Rmarkdown nil
                             pm-poly/markdown pm-poly/rapport)
 
-(defun pm--rmarkdown-shell-auto-selector (action &rest ignore)
+(defun pm--rmarkdown-shell-auto-selector (action &rest _ignore)
   (cl-case action
     (doc "AUTO DETECT")
     (command "Rscript -e \"rmarkdown::render('%i', output_format = 'all')\"")
@@ -624,7 +624,7 @@ block. Thus, output file names don't comply with
         (setq ofile (funcall ofile))))
     ofile))
 
-(defun pm--ess-run-command (command callback &rest ignore)
+(defun pm--ess-run-command (command callback &rest _ignore)
   (require 'ess)
   (let ((ess-eval-visibly t)
         (ess-dialect "R"))
