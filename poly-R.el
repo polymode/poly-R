@@ -36,6 +36,7 @@
 ;;; Code:
 
 (require 'polymode)
+(require 'ess)
 
 (defcustom pm-poly/R
   (pm-polymode :name "R"
@@ -68,11 +69,91 @@
 
 ;; MARKDOWN
 (require 'poly-markdown)
+
 ;;;###autoload (autoload 'poly-markdown+R-mode "poly-R")
 (define-polymode poly-markdown+R-mode poly-markdown-mode :lighter " PM-Rmd")
 
 ;;;###autoload
 (defalias 'poly-markdown+r-mode 'poly-markdown+R-mode)
+
+;; some templates:
+;; packages: rticles, tufte, xaringan, prettydoc, revealjs
+;; https://github.com/mikey-harper/example-rmd-templates.
+;; https://github.com/hrbrmstr/markdowntemplates
+
+(defun poly-r-rmarkdown-templates (&optional proc)
+  (let* ((ess-dialect "R")
+         (proc (or proc (ess-get-next-available-process "R" t)))
+         (cmd "
+local({
+  packages <- sort(unlist(lapply(.libPaths(), dir)))
+  cat('(\n')
+  for (pkg in packages) {
+    template_folder <- system.file('rmarkdown', 'templates', package = pkg)
+    if (dir.exists(template_folder)) {
+      dirs <- list.dirs(path = template_folder, recursive = FALSE)
+      for (dir in dirs) {
+        yaml_file <- file.path(dir, 'template.yaml')
+        if (file.exists(yaml_file)) {
+          yaml <- rmarkdown:::yaml_load_file_utf8(yaml_file)
+          if (is.null(desc <- yaml$description)) desc <- 'nil'
+          cat(sprintf('(\"%s\" \"%s\" \"%s\" \"%s\")\n', pkg, basename(dir), yaml$name, desc))
+        }
+      }
+    }
+  }
+  cat(')\n')
+})
+\n"))
+    (with-current-buffer (ess-command cmd nil nil nil nil proc)
+      (goto-char (point-min))
+      (when (re-search-forward "(" nil t)
+        (backward-char)
+        (read (current-buffer))))))
+
+(defun poly-r-rmarkdown-templates-menu (&optional _items)
+  (let* ((proc (ess-get-next-available-process "R" t))
+         (templates (process-get proc :rmarkdown-templates)))
+    (unless templates
+      (setq templates (poly-r-rmarkdown-templates proc))
+      (when (< 2000 (length templates))
+        (process-put proc :rmarkdown-templates templates)))
+    (mapcar (lambda (el)
+              (cons (car el) (mapcar (lambda (t)
+                                       (vector (nth 2 t)
+                                               `(poly-r-rmarkdown-draft ,(nth 0 t) ,(nth 1 t))
+                                               :help (nth 3 t)))
+                                     (cdr el))))
+            (seq-group-by #'car templates))))
+
+(defun poly-r-rmarkdown-draft (pkg template)
+  (let* ((ess-dialect "R")
+         (file (read-file-name "Create from template: "))
+         (cmd (format "rmarkdown::draft('%s', '%s', package = '%s', edit = FALSE)" file template pkg)))
+    (when (file-exists-p file)
+      (if (y-or-n-p (format "File '%s' already exists.  Overwrite? " file))
+          (delete-file file)
+        (signal 'quit t)))
+    (ess-eval-linewise cmd)
+    (sit-for 0.05)
+    (if (file-exists-p file)
+        (find-file-other-window file)
+      (let ((dir (file-name-sans-extension file)))
+        (if (file-exists-p dir)
+            (let ((new-file (expand-file-name (file-name-nondirectory file) dir)))
+              (if (file-exists-p new-file)
+                  (find-file-other-window new-file)
+                (error "No file '%s' created" new-file)))
+          (error "No file '%s' created" file))))))
+
+(easy-menu-define poly-markdown+R-menu (list ess-mode-map
+                                             inferior-ess-mode-map
+                                             poly-markdown+R-mode-map)
+  "Menu for poly-markdown+R-mode"
+  '("RMarkdown"
+    ("Templates"
+     :active (ess-get-next-available-process "R" t)
+     :filter poly-r-rmarkdown-templates-menu)))
 
 
 ;; RAPPORT
