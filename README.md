@@ -31,7 +31,6 @@ Exporters:
   - `Rmarkdown-ESS`
   - `Rbookdown-ESS`
 
-
 RMarkdown templates available through ESS menus and on `M-n M-m` in Rmd files (`poly-r-rmarkdown-create-from-template`):
 
   <img src="./img/templates.png"/>

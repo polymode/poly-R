@@ -455,7 +455,7 @@ block. Thus, output file names don't comply with
     (doc "AUTO DETECT")
     ;; last file is not auto-detected unless we cat new line
     (command "rmarkdown::render('%I', output_format = 'all', knit_root_dir=getwd())")
-    (output-file #'pm--rmarkdown-output-file-sniffer)))
+    (output-file #'pm--rmarkdown-output-file-from-.Last.value)))
 
 (defun pm--rmarkdown-output-file-sniffer ()
   (goto-char (point-min))
@@ -463,6 +463,9 @@ block. Thus, output file names don't comply with
     (while (re-search-forward "Output created: +\\(.*\\)" nil t)
       (push (expand-file-name (match-string 1)) files))
     (reverse (delete-dups files))))
+
+(defun pm--rmarkdown-output-file-from-.Last.value ()
+  (ess-get-words-from-vector "print(.Last.value)\n"))
 
 (defun pm--rbookdown-input-book-selector (action &rest _ignore)
   (cl-case action
@@ -479,9 +482,8 @@ block. Thus, output file names don't comply with
 (defun pm--rbookdown-output-selector (action id &rest _ignore)
   (cl-case action
     (doc id)
-    (output-file #'pm--rmarkdown-output-file-sniffer)
+    (output-file #'pm--rmarkdown-output-file-from-.Last.value)
     (t-spec (format "bookdown::%s" id))))
-
 
 (defcustom pm-exporter/Rbookdown-ESS
   (pm-callback-exporter :name "Rbookdown-ESS"
@@ -613,6 +615,8 @@ block. Thus, output file names don't comply with
       (setq string (concat (buffer-substring (or ess--tb-last-input (comint-previous-prompt)) (point-max))
                            string)))
     (with-temp-buffer
+      (setq ess-dialect "R"
+            ess-local-process-name (process-name proc))
       (insert string)
       (when (string-match-p "Error\\(:\\| +in\\)" string)
         (user-error "Errors durring ESS async command"))
