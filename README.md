@@ -30,6 +30,8 @@ Exporters:
   - `Rmarkdown`
   - `Rmarkdown-ESS`
   - `Rbookdown-ESS`
+  - `Shiny`
+  - `Shiny-ESS`
 
 RMarkdown templates available through ESS menus and on `M-n M-m` in Rmd files (`poly-r-rmarkdown-create-from-template`):
 

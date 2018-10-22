@@ -392,6 +392,23 @@ templates at:
 
 
 ;; Rmarkdown
+
+(defun pm--rmarkdown-output-file-sniffer ()
+  (goto-char (point-min))
+  (let (files)
+    (while (re-search-forward "Output created: +\\(.*\\)" nil t)
+      (push (expand-file-name (match-string 1)) files))
+    (reverse (delete-dups files))))
+
+(defun pm--rmarkdown-output-file-from-.Last.value ()
+  (ess-get-words-from-vector "print(.Last.value)\n"))
+
+(defun pm--rmarkdown-shell-auto-selector (action &rest _ignore)
+  (cl-case action
+    (doc "AUTO DETECT")
+    (command "Rscript -e \"rmarkdown::render('%i', output_format = 'all')\"")
+    (output-file #'pm--rmarkdown-output-file-sniffer)))
+
 (defcustom pm-exporter/Rmarkdown
   (pm-shell-exporter :name "Rmarkdown"
                      :from
@@ -414,14 +431,12 @@ block. Thus, output file names don't comply with
   :group 'polymode-export
   :type 'object)
 
-(polymode-register-exporter pm-exporter/Rmarkdown nil
-                            pm-poly/markdown pm-poly/rapport)
-
-(defun pm--rmarkdown-shell-auto-selector (action &rest _ignore)
+(defun pm--rmarkdown-callback-auto-selector (action &rest _ignore)
   (cl-case action
     (doc "AUTO DETECT")
-    (command "Rscript -e \"rmarkdown::render('%i', output_format = 'all')\"")
-    (output-file #'pm--rmarkdown-output-file-sniffer)))
+    ;; last file is not auto-detected unless we cat new line
+    (command "rmarkdown::render('%I', output_format = 'all', knit_root_dir=getwd())")
+    (output-file #'pm--rmarkdown-output-file-from-.Last.value)))
 
 (defcustom pm-exporter/Rmarkdown-ESS
   (pm-callback-exporter :name "Rmarkdown-ESS"
@@ -448,24 +463,12 @@ block. Thus, output file names don't comply with
   :type 'object)
 
 (polymode-register-exporter pm-exporter/Rmarkdown-ESS nil
-                            pm-poly/markdown pm-poly/rapport)
+                            pm-poly/markdown+R)
+(polymode-register-exporter pm-exporter/Rmarkdown nil
+                            pm-poly/markdown+R)
 
-(defun pm--rmarkdown-callback-auto-selector (action &rest _ignore)
-  (cl-case action
-    (doc "AUTO DETECT")
-    ;; last file is not auto-detected unless we cat new line
-    (command "rmarkdown::render('%I', output_format = 'all', knit_root_dir=getwd())")
-    (output-file #'pm--rmarkdown-output-file-from-.Last.value)))
-
-(defun pm--rmarkdown-output-file-sniffer ()
-  (goto-char (point-min))
-  (let (files)
-    (while (re-search-forward "Output created: +\\(.*\\)" nil t)
-      (push (expand-file-name (match-string 1)) files))
-    (reverse (delete-dups files))))
-
-(defun pm--rmarkdown-output-file-from-.Last.value ()
-  (ess-get-words-from-vector "print(.Last.value)\n"))
+
+;;; Bookdown
 
 (defun pm--rbookdown-input-book-selector (action &rest _ignore)
   (cl-case action
@@ -509,8 +512,46 @@ block. Thus, output file names don't comply with
   :group 'polymode-export
   :type 'object)
 
-(polymode-register-exporter pm-exporter/Rbookdown-ESS nil
-                            pm-poly/markdown+R pm-poly/rapport)
+(polymode-register-exporter pm-exporter/Rbookdown-ESS nil pm-poly/markdown+R)
+
+
+;; Shiny Rmd
+
+(defun pm--shiny-input-selector (action &optional id &rest _ignore)
+  (cl-case action
+    (doc "Shiny Rmd Application")
+    (match (save-excursion
+             (goto-char (point-min))
+             (re-search-forward "^[ \t]*runtime:[ \t]+shiny[ \t]*$" nil t)))
+    (command (if (equal id "Rmd-ESS")
+                 "rmarkdown::run('%I')\n"
+               "Rscript -e \"rmarkdown::run('%I')\""))))
+
+(defcustom pm-exporter/Shiny
+  (pm-shell-exporter :name "Shiny"
+                     :from
+                     '(("Rmd" . pm--shiny-input-selector))
+                     :to
+                     '(("html" "html" "Shiny Web App")))
+  "Shiny exporter of Rmd documents in stand alone shell.
+The Rmd yaml preamble must contain runtime: shiny declaration."
+  :group 'polymode-export
+  :type 'object)
+
+(defcustom pm-exporter/Shiny-ESS
+  (pm-callback-exporter :name "Shiny-ESS"
+                        :from
+                        '(("Rmd-ESS" . pm--shiny-input-selector))
+                        :to
+                        '(("html" "html" "Shiny Web App"))
+                        :function 'pm--ess-run-command)
+  "Shiny exporter of Rmd documents within ESS process.
+The Rmd yaml preamble must contain runtime: shiny declaration."
+  :group 'polymode-export
+  :type 'object)
+
+(polymode-register-exporter pm-exporter/Shiny nil pm-poly/markdown+R)
+(polymode-register-exporter pm-exporter/Shiny-ESS nil pm-poly/markdown+R)
 
 
 ;; KnitR
@@ -629,10 +670,15 @@ block. Thus, output file names don't comply with
   (let ((ess-eval-visibly t)
         (ess-dialect "R"))
     (ess-force-buffer-current)
+    (with-current-buffer (ess-get-process-buffer)
+      (unless goto-address-mode
+        ;; mostly for shiny apps
+        (goto-address-mode 1)))
     (ess-process-put :output-file pm--output-file)
-    (ess-process-put 'callbacks (list callback))
-    (ess-process-put 'interruptable? t)
-    (ess-process-put 'running-async? t)
+    (when callback
+      (ess-process-put 'callbacks (list callback))
+      (ess-process-put 'interruptable? t)
+      (ess-process-put 'running-async? t))
     (ess-eval-linewise command)
     (ess-show-buffer (ess-get-process-buffer))))
 

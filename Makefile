@@ -11,7 +11,7 @@ LINTELS = $(filter-out poly-R-autoloads.el, $(ELS))
 
 # export PM_VERBOSE
 
-.PHONY: test version compile
+.PHONY: build version compile
 
 all: compile checkdoc test
 
