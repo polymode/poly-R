@@ -558,11 +558,11 @@ The Rmd yaml preamble must contain runtime: shiny declaration."
 (defcustom pm-weaver/knitR
   (pm-shell-weaver :name "knitr"
                    :from-to
-                   '(("latex" "\\.\\(tex\\|[rR]nw\\)\\'" "tex" "LaTeX" "Rscript -e \"knitr::knit('%i', output='%o')\"")
-                     ("html" "\\.x?html?\\'" "html" "HTML" "Rscript -e \"knitr::knit('%i', output='%o')\"")
-                     ("markdown" "\\.[rR]?md]\\'" "md" "Markdown" "Rscript -e \"knitr::knit('%i', output='%o')\"")
+                   '(("latex" "\\.\\(r?tex\\|rnw\\)\\'" "tex" "LaTeX" "Rscript -e \"knitr::knit('%i', output='%o')\"")
+                     ("html" "\\.r?x?html?\\'" "html" "HTML" "Rscript -e \"knitr::knit('%i', output='%o')\"")
+                     ("markdown" "\\.r?md]\\'" "md" "Markdown" "Rscript -e \"knitr::knit('%i', output='%o')\"")
                      ("rst" "\\.rst" "rst" "ReStructuredText" "Rscript -e \"knitr::knit('%i', output='%o')\"")
-                     ("brew" "\\.[rR]?brew\\'" "brew" "Brew" "Rscript -e \"knitr::knit('%i', output='%o')\"")
+                     ("brew" "\\.r?brew\\'" "brew" "Brew" "Rscript -e \"knitr::knit('%i', output='%o')\"")
                      ("asciidoc" "\\.asciidoc\\'" "txt" "AsciiDoc" "Rscript -e \"knitr::knit('%i', output='%o')\"")
                      ("textile" "\\.textile\\'" "textile" "Textile" "Rscript -e \"knitr::knit('%i', output='%o')\"")))
   "Shell knitR weaver."
@@ -576,12 +576,12 @@ The Rmd yaml preamble must contain runtime: shiny declaration."
 (defcustom pm-weaver/knitR-ESS
   (pm-callback-weaver :name "knitR-ESS"
                       :from-to
-                      '(("latex" "\\.\\(tex\\|rnw\\)\\'" "tex" "LaTeX" "knitr::knit('%I', output='%O')")
-                        ("html" "\\.x?html?\\'" "html" "HTML" "knitr::knit('%I', output='%O')")
-                        ("markdown" "\\.r?md\\'" "md" "Markdown" "knitr::knit('%I', output='%O')")
+                      '(("latex" "\\.\\(r?tex\\|rnw\\)\\'" "tex" "LaTeX" "knitr::knit('%I', output='%O')")
+                        ("html" "\\.[xX]?html?\\'" "html" "HTML" "knitr::knit('%I', output='%O')")
+                        ("markdown" "\\.r?md]\\'" "md" "Markdown" "knitr::knit('%I', output='%O')")
                         ("rst" "\\.rst\\'" "rst" "ReStructuredText" "knitr::knit('%I', output='%O')")
-                        ("brew" "\\.r?brew\\'" "brew" "Brew" "knitr::knit('%I', output='%O')")
-                        ("asciidoc" "\\.asciidoc\\'" "txt" "AsciiDoc" "knitr::knit('%I', output='%O')")
+                        ("brew" "\\.r?brew]\\'" "brew" "Brew" "knitr::knit('%I', output='%O')")
+                        ("asciidoc" "\\.r?asciidoc\\'" "txt" "AsciiDoc" "knitr::knit('%I', output='%O')")
                         ("textile" "\\.textile\\'" "textile" "Textile" "knitr::knit('%I', output='%O')"))
                       :function 'pm--ess-run-command
                       :callback 'pm--ess-callback)
@@ -671,8 +671,9 @@ The Rmd yaml preamble must contain runtime: shiny declaration."
         (ess-dialect "R"))
     (ess-force-buffer-current)
     (with-current-buffer (ess-get-process-buffer)
-      (unless goto-address-mode
-        ;; mostly for shiny apps
+      (unless (and (boundp 'goto-address-mode)
+                   goto-address-mode)
+        ;; mostly for shiny apps (added in ESS 19)
         (goto-address-mode 1)))
     (ess-process-put :output-file pm--output-file)
     (when callback
