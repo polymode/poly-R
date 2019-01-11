@@ -36,7 +36,7 @@
 ;;; Code:
 
 (require 'polymode)
-(require 'ess)
+(require 'ess-mode)
 
 (defgroup poly-R nil
   "Settings for poly-R polymodes"
