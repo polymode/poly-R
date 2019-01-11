@@ -681,7 +681,7 @@ The Rmd yaml preamble must contain runtime: shiny declaration."
       (ess-process-put 'interruptable? t)
       (ess-process-put 'running-async? t))
     (ess-eval-linewise command)
-    (ess-show-buffer (ess-get-process-buffer))))
+    (display-buffer (ess-get-process-buffer))))
 
 
 ;; COMPAT
