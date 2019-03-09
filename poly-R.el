@@ -706,13 +706,21 @@ The Rmd yaml preamble must contain runtime: shiny declaration."
 
 ;;; ASSOCIATIONS
 
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.Snw\\'" . poly-noweb+r-mode))
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.[rR]nw\\'" . poly-noweb+r-mode))
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.[rR]md\\'" . poly-markdown+r-mode))
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.rapport\\'" . poly-rapport-mode))
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.[rR]html\\'" . poly-html+r-mode))
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.[rR]brew\\'" . poly-brew+r-mode))
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.[Rr]cpp\\'" . poly-r+c++-mode))
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.cpp[rR]\\'" . poly-c++r-mode))
 
 (provide 'poly-R)
