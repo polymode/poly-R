@@ -37,6 +37,7 @@
 
 (require 'polymode)
 (require 'ess-mode)
+(require 'ess-r-mode nil t)
 
 (defgroup poly-R nil
   "Settings for poly-R polymodes"
@@ -363,30 +364,41 @@ templates at:
                                   (poly-ess-help+R-mode))))
 
 
-(defun pm--Rd-examples-head-matcher (ahead)
-  (when (re-search-forward "\\examples *\\({\n\\)" nil t ahead)
-    (cons (match-beginning 1) (match-end 1))))
+;; Rd examples
+(defun pm--Rd-head-matcher (ahead)
+  (when (re-search-forward "\\\\\\(examples\\|usage\\) *\\({\n\\)" nil t ahead)
+    (cons (match-beginning 0) (match-end 0))))
 
-(defun pm--Rd-examples-tail-matcher (ahead)
+(defun pm--Rd-tail-matcher (ahead)
   (when (< ahead 0)
-    (goto-char (car (pm--R+C++-head-matcher -1))))
-  (let ((end (or (ignore-errors (scan-sexps (point) 1))
+    (goto-char (cdr (pm--Rd-head-matcher -1))))
+  (let ((end (or (ignore-errors
+                   (skip-chars-backward " \t\n{")
+                   (scan-sexps (point) 1))
                  (buffer-end 1))))
     (cons (max 1 (- end 1)) end)))
 
-(defcustom pm-inner/Rd
-  (pm-inner-chunkmode :name "R+C++"
+(defcustom pm-inner/Rd-examples
+  (pm-inner-chunkmode :name "Rd-examples"
                       :mode 'R-mode
                       :head-mode 'host
-                      :head-matcher 'pm--Rd-examples-head-matcher
-                      :tail-matcher 'pm--Rd-examples-tail-matcher)
+                      :head-matcher 'pm--Rd-head-matcher
+                      :tail-matcher 'pm--Rd-tail-matcher)
   "Rd examples chunk."
   :group 'poly-innermodes
   :type 'object)
 
+(defcustom pm-host/Rd
+  (pm-host-chunkmode :name "Rd"
+                     :mode 'Rd-mode)
+  "Rd hostmode."
+  :group 'poly-hostmodes
+  :type 'object)
+
 ;;;###autoload (autoload 'poly-Rd-mode "poly-R")
 (define-polymode poly-Rd-mode
-  :innermodes '(pm-inner/Rd))
+  :hostmode 'pm-host/Rd
+  :innermodes '(pm-inner/Rd-examples))
 
 (add-hook 'Rd-mode-hook 'poly-Rd-mode)
 
