@@ -111,7 +111,7 @@ list_templates <-
         for (d in dirs) {
           yaml_file <- file.path(d, 'template.yaml')
           if (file.exists(yaml_file)) {
-            yaml <- rmarkdown:::yaml_load_file_utf8(yaml_file)
+            yaml <- yaml::yaml.load(readLines(yaml_file, encoding = 'UTF-8'))
             if (is.null(desc <- yaml$description)) desc <- 'nil'
             if (!is.null(pkg)) d <- basename(d)
             cat(sprintf('(\"%s\" \"%s\" \"%s\" \"%s\")\n', pkg_name, d, yaml$name, desc))
@@ -162,7 +162,7 @@ list_templates <-
 
 (defun poly-r--rmarkdown-draft (pkg template)
   (let* ((ess-dialect "R")
-         (file (read-file-name "Create from template: "))
+         (file (read-file-name "Draft name: "))
          (pkg (if (string= pkg "USER") "NULL" (format "\"%s\"" pkg)))
          (cmd (format "rmarkdown::draft('%s', '%s', package = %s, edit = FALSE)" file template pkg)))
     (if (and (string= pkg "NULL")
