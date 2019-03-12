@@ -35,3 +35,22 @@
      (insert "\n")
      (pm-test-spans)
      (delete-backward-char 1))))
+
+
+
+(ert-deftest poly-R/no-nested-spans ()
+  (pm-test-run-on-string 'poly-markdown-mode
+    "```{r load-bodipy}
+cnames = tolower(cnames)
+cnames = gsub('\\(', '', cnames)
+cnames = gsub('aa', 'bb', cnames)
+```"
+    (switch-to-buffer (current-buffer))
+    (goto-char 20)
+    (pm-switch-to-buffer)
+    (should (eq major-mode 'ess-r-mode))
+    (should (equal (pm-innermost-range 20 t)
+                   (cons 20 111)))
+    (goto-char 78)
+    (pm-switch-to-buffer)
+    (should (eq major-mode 'ess-r-mode))))
