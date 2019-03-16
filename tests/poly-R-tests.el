@@ -36,8 +36,6 @@
      (pm-test-spans)
      (delete-backward-char 1))))
 
-
-
 (ert-deftest poly-R/no-nested-spans ()
   (pm-test-run-on-string 'poly-markdown-mode
     "```{r load-bodipy}
@@ -54,3 +52,12 @@ cnames = gsub('aa', 'bb', cnames)
     (goto-char 78)
     (pm-switch-to-buffer)
     (should (eq major-mode 'ess-r-mode))))
+
+(ert-deftest poly-R/after-change-extention ()
+  (pm-test-poly-lock poly-markdown+R-mode "minimal.Rmd"
+    ((delete-1 ("first\n```" end))
+     (delete-backward-char 1)
+     (pm-test-spans)
+     (insert "`")
+     (pm-test-spans))))
+
