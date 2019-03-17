@@ -2,11 +2,11 @@
 (require 'poly-R)
 (require 'polymode-test-utils)
 
-(ert-deftest poly-R/indentation ()
+(ert-deftest poly-r/indentation ()
   (pm-test-file-indent poly-noweb+R-mode "knitr-beamer.Rnw"))
 
-(ert-deftest poly-R/Rd-mode-test ()
-  (pm-test-run-on-file poly-Rd-mode "test.Rd"
+(ert-deftest poly-r/Rd-mode-test ()
+  (pm-test-run-on-file poly-rd-mode "test.Rd"
     (switch-to-buffer (current-buffer))
     (goto-char 1)
     (pm-switch-to-buffer)
@@ -21,8 +21,8 @@
     (pm-switch-to-buffer)
     (should (eq major-mode 'ess-r-mode))))
 
-(ert-deftest poly-R/Rd-font-lock-test ()
-  (pm-test-poly-lock poly-Rd-mode "test.Rd"
+(ert-deftest poly-r/rd-font-lock-test ()
+  (pm-test-poly-lock poly-rd-mode "test.Rd"
     ((insert-delete-1 ("usage" end))
      (switch-to-buffer (current-buffer))
      (insert " ")
@@ -36,7 +36,7 @@
      (pm-test-spans)
      (delete-backward-char 1))))
 
-(ert-deftest poly-R/no-nested-spans ()
+(ert-deftest poly-r/no-nested-spans ()
   (pm-test-run-on-string 'poly-markdown-mode
     "```{r load-bodipy}
 cnames = tolower(cnames)
@@ -53,7 +53,7 @@ cnames = gsub('aa', 'bb', cnames)
     (pm-switch-to-buffer)
     (should (eq major-mode 'ess-r-mode))))
 
-(ert-deftest poly-R/after-change-extention ()
+(ert-deftest poly-r/after-change-extention ()
   (pm-test-poly-lock poly-markdown+R-mode "minimal.Rmd"
     ((delete-1 ("first\n```" end))
      (delete-backward-char 1)
