@@ -342,7 +342,7 @@ templates at:
 
 (add-hook 'ess-help-mode-hook (lambda ()
                                 (when (string= ess-dialect "R")
-                                  (poly-r-help-examples-innermode))))
+                                  (poly-r-help-examples-mode))))
 
 
 ;; Rd examples
