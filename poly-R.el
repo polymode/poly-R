@@ -627,11 +627,11 @@ The Rmd yaml preamble must contain runtime: shiny declaration."
 
 
 ;; ESS command
-(declare-function ess-async-command nil)
-(declare-function ess-force-buffer-current nil)
-(declare-function ess-process-get nil)
-(declare-function ess-process-put nil)
-(declare-function comint-previous-prompt nil)
+(declare-function ess-async-command "ess-inf.el")
+(declare-function ess-force-buffer-current "ess-inf.el")
+(declare-function ess-process-get "ess-inf.el")
+(declare-function ess-process-put "ess-inf.el")
+(declare-function comint-previous-prompt "comint.el")
 
 (defun pm--ess-callback (proc string)
   (let ((ofile (process-get proc :output-file)))
