@@ -87,7 +87,6 @@ templates."
 (define-obsolete-function-alias 'poly-markdown+R-mode 'poly-markdown+r-mode "v0.2")
 (define-obsolete-variable-alias 'poly-markdown+R-mode 'poly-markdown+r-mode "v0.2")
 ;;;###autoload
-(define-obsolete-function-alias 'poly-markdown+r-mode 'poly-markdown+r-mode "v0.2")
 (define-obsolete-variable-alias 'poly-markdown+R-mode-map 'poly-markdown+r-mode-map "v0.2")
 ;;;###autoload (autoload 'poly-markdown+r-mode "poly-R")
 (define-polymode poly-markdown+r-mode poly-markdown-mode :lighter " PM-Rmd")
