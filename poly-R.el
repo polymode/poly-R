@@ -102,7 +102,7 @@ templates."
                       "c()"))
          (cmd (concat "
 local({
-list_templates <- 
+list_templates <-
  function(user_dirs) {
     user_dirs <- c(user_dirs, unlist(lapply(user_dirs, list.dirs, recursive = FALSE)))
     list_from_dir <- function(dir, pkg = NULL) {
@@ -200,8 +200,7 @@ templates at:
 
  https://github.com/mikey-harper/example-rmd-templates
  https://github.com/hrbrmstr/markdowntemplates
- https://github.com/svmiller/svm-r-markdown-templates
-"
+ https://github.com/svmiller/svm-r-markdown-templates"
   (interactive)
   (let* ((specs (poly-r-rmarkdown-templates))
          (spec (cdr (pm--completing-read "Template: "
@@ -219,7 +218,7 @@ templates at:
      :active (ess-get-next-available-process "R" t)
      :filter poly-r-rmarkdown-templates-menu)))
 
-(define-key poly-markdown+R-mode-map (kbd "M-n M-m") #'poly-r-rmarkdown-create-from-template)
+(define-key poly-markdown+r-mode-map (kbd "M-n M-m") #'poly-r-rmarkdown-create-from-template)
 
 
 ;; RAPPORT
@@ -302,7 +301,7 @@ templates at:
 
 (defun pm--c++r-tail-matcher (ahead)
   (when (< ahead 0)
-    (error "backwards tail match not implemented"))
+    (error "Backwards tail match not implemented"))
   ;; may be rely on syntactic lookup ?
   (when (re-search-forward "^[ \t]*\\*/")
     (cons (match-beginning 0) (match-end 0))))
@@ -705,3 +704,4 @@ The Rmd yaml preamble must contain runtime: shiny declaration."
 (add-to-list 'auto-mode-alist '("\\.cpp[rR]\\'" . poly-c++r-mode))
 
 (provide 'poly-R)
+;;; poly-R.el ends here
