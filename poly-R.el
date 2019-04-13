@@ -320,23 +320,29 @@ templates at:
 
 
 ;;; R help
+(define-innermode poly-r-help-usage-innermode
+  :mode 'ess-r-mode
+  :head-matcher "^Usage:"
+  :tail-matcher "^Arguments:"
+  :keep-in-mode 'host
+  :head-mode 'host
+  :tail-mode 'host)
+
 (define-obsolete-variable-alias 'pm-inner/ess-help-R 'poly-ess-help-R-innermode "v0.2")
 (define-innermode poly-r-help-examples-innermode
-  :mode 'R-mode
+  :mode 'ess-r-mode
   :head-matcher "^Examples:"
   :tail-matcher "\\'"
   :indent-offset 5
-  :switch-buffer-functions '(pm--ess-help+R-turn-off-read-only))
-
-(defun pm--ess-help+R-turn-off-read-only (&rest _ignore)
-  ;; don't transfer read only status from main help buffer
-  (cl-case pm/type
-    (body (read-only-mode -1))
-    (head (read-only-mode 1))))
+  :head-mode 'host)
 
 ;;;###autoload (autoload 'poly-r-help-examples-mode "poly-R")
 (define-polymode poly-r-help-examples-mode
-  :innermodes '(poly-r-help-examples-innermode))
+  :innermodes '(poly-r-help-usage-innermode
+                poly-r-help-examples-innermode)
+  ;; don't transfer read only status from main help buffer
+  (setq-local polymode-move-these-vars-from-old-buffer
+              (delq 'buffer-read-only polymode-move-these-vars-from-old-buffer)))
 
 (add-hook 'ess-help-mode-hook (lambda ()
                                 (when (string= ess-dialect "R")
