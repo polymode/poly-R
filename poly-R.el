@@ -322,7 +322,7 @@ templates at:
 ;;; R help
 (define-innermode poly-r-help-usage-innermode
   :mode 'ess-r-mode
-  :head-matcher "^Usage:"
+  :head-matcher "^Usage:\n"
   :tail-matcher "^Arguments:"
   :keep-in-mode 'host
   :head-mode 'host
@@ -331,7 +331,7 @@ templates at:
 (define-obsolete-variable-alias 'pm-inner/ess-help-R 'poly-ess-help-R-innermode "v0.2")
 (define-innermode poly-r-help-examples-innermode
   :mode 'ess-r-mode
-  :head-matcher "^Examples:"
+  :head-matcher "^Examples:\n"
   :tail-matcher "\\'"
   :indent-offset 5
   :head-mode 'host)
