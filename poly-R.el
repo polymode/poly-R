@@ -688,6 +688,8 @@ The Rmd yaml preamble must contain runtime: shiny declaration."
   (advice-add 'ess-eval-buffer :around 'pm-execute-narrowed-to-span)
   (advice-add 'ess-beginning-of-function :around 'pm-execute-narrowed-to-span))
 
+(add-to-list 'polymode-move-these-vars-from-base-buffer 'ess-local-process-name)
+(add-to-list 'polymode-mode-abbrev-aliases '("ess-r" . "R"))
 
 
 ;;; ASSOCIATIONS
