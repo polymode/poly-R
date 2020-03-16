@@ -1,0 +1,54 @@
+---
+title: "Dygraphs"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+---
+
+```{r setup, include=FALSE}
+library(dygraphs)
+library(flexdashboard)
+library(shiny)
+```
+
+# First Page
+
+### Lung Deaths (All)
+
+```{r}
+dygraph(ldeaths)
+```
+
+### Lung Deaths (Male)
+
+```{r}
+dygraph(mdeaths)
+```
+
+### Lung Deaths (Female)
+
+```{r}
+dygraph(fdeaths)
+```
+
+# Second page
+
+### Cars
+
+<!-- ```{r} -->
+<!-- knitr::kable(mtcars) -->
+<!-- ``` -->
+
+```{r}
+DT::datatable(mtcars, options = list(
+), )
+```
+
+```{r }
+DT::datatable(mtcars, options = list() )
+```
+
+
+```{r sfsom}
+DT::dataset(mtcars, opt)  
+```

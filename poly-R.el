@@ -328,7 +328,7 @@ templates at:
 (define-innermode poly-r-help-usage-innermode
   :mode 'ess-r-mode
   :head-matcher "^Usage:\n"
-  :tail-matcher "^Arguments:"
+  :tail-matcher "^[^ \t]+:"
   :keep-in-mode 'host
   :head-mode 'host
   :tail-mode 'host)
