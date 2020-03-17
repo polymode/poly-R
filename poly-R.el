@@ -519,7 +519,7 @@ block. Thus, output file names don't comply with
     (doc "Shiny Rmd Application")
     (match (save-excursion
              (goto-char (point-min))
-             (re-search-forward "^[ \t]*runtime:[ \t]+shiny[ \t]*$" nil t)))
+             (re-search-forward "^[ \t]*runtime:[ \t]+shiny\\(?:[ \t]\\|_prerendered\\)*$" nil t)))
     (command (if (equal id "Rmd-ESS")
                  "rmarkdown::run('%I')\n"
                "Rscript -e \"rmarkdown::run('%I')\""))))
@@ -532,7 +532,7 @@ block. Thus, output file names don't comply with
                      :to
                      '(("html" "html" "Shiny Web App")))
   "Shiny exporter of Rmd documents in stand alone shell.
-The Rmd yaml preamble must contain runtime: shiny declaration."
+The Rmd yaml preamble must contain runtime: shiny or runtime: shiny_prerendered declaration."
   :group 'polymode-export
   :type 'object)
 
@@ -545,7 +545,7 @@ The Rmd yaml preamble must contain runtime: shiny declaration."
                         '(("html" "html" "Shiny Web App"))
                         :function 'pm--ess-run-command)
   "Shiny exporter of Rmd documents within ESS process.
-The Rmd yaml preamble must contain runtime: shiny declaration."
+The Rmd yaml preamble must contain runtime: shiny or runtime: shiny_prerendered declaration."
   :group 'polymode-export
   :type 'object)
 
