@@ -96,16 +96,8 @@ templates."
 (define-polymode poly-markdown+r-mode poly-markdown-mode :lighter " PM-Rmd"
   :innermodes '(:inherit poly-r-markdown-inline-code-innermode))
 
-(defun poly-r-rmarkdown-templates (&optional proc)
-  (let* ((ess-dialect "R")
-         (proc (or proc (ess-get-next-available-process "R" t)))
-         (user-dirs (if poly-r-rmarkdown-template-dirs
-                        (format "c(\"%s\")"
-                                (mapconcat #'identity
-                                           poly-r-rmarkdown-template-dirs
-                                           "\", \""))
-                      "c()"))
-         (cmd (concat "
+(defvar poly-r--rmarkdown-template-command
+  "
 local({
 list_templates <-
  function(user_dirs) {
@@ -120,7 +112,7 @@ list_templates <-
             yaml <- yaml::yaml.load(readLines(yaml_file, encoding = 'UTF-8'))
             if (is.null(desc <- yaml$description)) desc <- 'nil'
             if (!is.null(pkg)) d <- basename(d)
-            cat(sprintf('(\"%s\" \"%s\" \"%s\" \"%s\")\n', pkg_name, d, yaml$name, desc))
+            cat(sprintf('(\"%%s\" \"%%s\" \"%%s\" \"%%s\")\n', pkg_name, d, yaml$name, desc))
           }
         }
       }
@@ -130,7 +122,7 @@ list_templates <-
       files <- list.files(user_dir,  '\\\\.[Rr]md$', full.names = TRUE)
       for (f in files) {
         name <- sub('\\\\.[^.]+$','', basename(f))
-        cat(sprintf('(\"USER\" \"%s\" \"%s\")\n', f, name))
+        cat(sprintf('(\"USER\" \"%%s\" \"%%s\")\n', f, name))
       }
       list_from_dir(user_dir)
     }
@@ -141,8 +133,18 @@ list_templates <-
     }
     cat(')\n')
   }\n
-"
-                      (format "list_templates(%s)})\n" user-dirs))))
+ list_templates(%s)})\n")
+
+(defun poly-r-rmarkdown-templates (&optional proc)
+  (let* ((ess-dialect "R")
+         (proc (or proc (ess-get-next-available-process "R" t)))
+         (user-dirs (if poly-r-rmarkdown-template-dirs
+                        (format "c(\"%s\")"
+                                (mapconcat #'identity
+                                           poly-r-rmarkdown-template-dirs
+                                           "\", \""))
+                      "c()"))
+         (cmd (format poly-r--rmarkdown-template-command user-dirs)))
     (with-current-buffer (ess-command cmd nil nil nil nil proc)
       (goto-char (point-min))
       (if (save-excursion (re-search-forward "\\+ Error" nil t))
@@ -191,21 +193,21 @@ list_templates <-
 (defvar poly-r--rmarkdown-create-from-template-hist nil)
 (defun poly-r-rmarkdown-create-from-template ()
   "Create new Rmarkdown project from template.
-Templates are provided by R packages in the format described in
-the help of 'draft' function and chapter 17 of the RMarkdown
-book. This function also searches for templates in
-`poly-r-rmarkdown-template-dirs' directories. Templates in those
-directories are either simple Rmd files or template directories
-with template.yaml metadata as enforced by rmarkdwon template
-format.
+  Templates are provided by R packages in the format described in
+  the help of 'draft' function and chapter 17 of the RMarkdown
+  book. This function also searches for templates in
+  `poly-r-rmarkdown-template-dirs' directories. Templates in those
+  directories are either simple Rmd files or template directories
+  with template.yaml metadata as enforced by rmarkdwon template
+  format.
 
-Common packages containing templates are rticles, tufte,
-xaringan, prettydoc, revealjs, flexdashboards.  Some more
-templates at:
+  Common packages containing templates are rticles, tufte,
+  xaringan, prettydoc, revealjs, flexdashboards.  Some more
+  templates at:
 
- https://github.com/mikey-harper/example-rmd-templates
- https://github.com/hrbrmstr/markdowntemplates
- https://github.com/svmiller/svm-r-markdown-templates"
+  https://github.com/mikey-harper/example-rmd-templates
+  https://github.com/hrbrmstr/markdowntemplates
+  https://github.com/svmiller/svm-r-markdown-templates"
   (interactive)
   (let* ((specs (poly-r-rmarkdown-templates))
          (spec (cdr (pm--completing-read "Template: "
@@ -419,10 +421,10 @@ templates at:
                        ("slidy" "html" "slidy presentation" "slidy_presentation")
                        ("beamer" "pdf" "beamer presentation" "beamer_presentation")))
   "R Markdown exporter.
-Please not that with 'AUTO DETECT' export options, output file
-names are inferred by Rmarkdown from YAML description
-block. Thus, output file names don't comply with
-`polymode-exporter-output-file-format'."
+  Please not that with 'AUTO DETECT' export options, output file
+  names are inferred by Rmarkdown from YAML description
+  block. Thus, output file names don't comply with
+  `polymode-exporter-output-file-format'."
   :group 'polymode-export
   :type 'object)
 
@@ -451,10 +453,10 @@ block. Thus, output file names don't comply with
                         :function 'pm--ess-run-command
                         :callback 'pm--ess-callback)
   "R Markdown exporter.
-Please not that with 'AUTO DETECT' export options, output file
-names are inferred by Rmarkdown from YAML description
-block. Thus, output file names don't comply with
-`polymode-exporter-output-file-format'."
+  Please not that with 'AUTO DETECT' export options, output file
+  names are inferred by Rmarkdown from YAML description
+  block. Thus, output file names don't comply with
+  `polymode-exporter-output-file-format'."
   :group 'polymode-export
   :type 'object)
 
@@ -532,7 +534,7 @@ block. Thus, output file names don't comply with
                      :to
                      '(("html" "html" "Shiny Web App")))
   "Shiny exporter of Rmd documents in stand alone shell.
-The Rmd yaml preamble must contain runtime: shiny declaration."
+  The Rmd yaml preamble must contain runtime: shiny declaration."
   :group 'polymode-export
   :type 'object)
 
@@ -545,7 +547,7 @@ The Rmd yaml preamble must contain runtime: shiny declaration."
                         '(("html" "html" "Shiny Web App"))
                         :function 'pm--ess-run-command)
   "Shiny exporter of Rmd documents within ESS process.
-The Rmd yaml preamble must contain runtime: shiny declaration."
+  The Rmd yaml preamble must contain runtime: shiny declaration."
   :group 'polymode-export
   :type 'object)
 
