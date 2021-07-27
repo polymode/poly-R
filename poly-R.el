@@ -48,8 +48,35 @@
                :hostmode 'pm-host/R
                :innermodes '(pm-inner/fundamental))
   "Root polymode with R host intended to be inherited from."
-  :group 'polymodes
+  :group 'poly-R
   :type 'object)
+
+;;;###autoload
+(defun poly-r-set-markdown-flavour (&optional varname value)
+  "Flavour of markdown to use in Rmarkdown documents.
+\"GFM\" or \"gfm\" sets it to github-flavoured-markdown. Any
+other value uses standard markdown."
+  (set-default varname value)
+  (if (string-equal "gfm" (downcase value))
+      (add-to-list 'auto-mode-alist '("\\.[rR]md\\'" . poly-gfm+r-mode))
+    (add-to-list 'auto-mode-alist '("\\.[rR]md\\'" . poly-markdown+r-mode))))
+
+(defcustom poly-r-markdown-flavour "standard"
+  "Flavour of markdown to use in Rmarkdown documents.
+\"GFM\" or \"gfm\" sets it to github-flavoured-markdown. Any
+other value uses standard markdown.
+
+To set this value from elisp, use:
+
+(poly-r-set-markdown-flavour 'poly-r-markdown-flavour \"gfm\")
+
+or
+
+(poly-r-set-markdown-flavour 'poly-r-markdown-flavour \"standard\")"
+  :type 'string
+  :set #'poly-r-set-markdown-flavour
+  :group 'poly-R
+  :initialize #'custom-initialize-set)
 
 
 ;; NOWEB
@@ -94,6 +121,9 @@ templates."
 (define-obsolete-variable-alias 'poly-markdown+R-mode-map 'poly-markdown+r-mode-map "v0.2")
 ;;;###autoload (autoload 'poly-markdown+r-mode "poly-R")
 (define-polymode poly-markdown+r-mode poly-markdown-mode :lighter " PM-Rmd"
+  :innermodes '(:inherit poly-r-markdown-inline-code-innermode))
+;;;###autoload (autoload 'poly-gfm+r-mode "poly-R")
+(define-polymode poly-gfm+r-mode poly-gfm-mode :lighter " PGFM-Rmd"
   :innermodes '(:inherit poly-r-markdown-inline-code-innermode))
 
 (defvar poly-r--rmarkdown-template-command
@@ -226,6 +256,7 @@ list_templates <-
      :filter poly-r-rmarkdown-templates-menu)))
 
 (define-key poly-markdown+r-mode-map (kbd "M-n M-m") #'poly-r-rmarkdown-create-from-template)
+(define-key poly-gfm+r-mode-map (kbd "M-n M-m") #'poly-r-rmarkdown-create-from-template)
 
 
 ;; RAPPORT
@@ -465,6 +496,11 @@ list_templates <-
 (polymode-register-exporter poly-r-markdown-exporter nil
                             poly-markdown+r-polymode)
 
+(polymode-register-exporter poly-r-markdown-ess-exporter nil
+                            poly-gfm+r-polymode)
+(polymode-register-exporter poly-r-markdown-exporter nil
+                            poly-gfm+r-polymode)
+
 
 ;;; Bookdown
 
@@ -512,6 +548,7 @@ list_templates <-
   :type 'object)
 
 (polymode-register-exporter poly-r-bookdown-ess-exporter nil poly-markdown+r-polymode)
+(polymode-register-exporter poly-r-bookdown-ess-exporter nil poly-gfm+r-polymode)
 
 
 ;; Shiny Rmd
@@ -705,8 +742,6 @@ list_templates <-
 (add-to-list 'auto-mode-alist '("\\.Snw\\'" . poly-noweb+r-mode))
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.[rR]nw\\'" . poly-noweb+r-mode))
-;;;###autoload
-(add-to-list 'auto-mode-alist '("\\.[rR]md\\'" . poly-markdown+r-mode))
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.rapport\\'" . poly-rapport-mode))
 ;;;###autoload
