@@ -716,6 +716,8 @@ list_templates <-
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.[rR]nw\\'" . poly-noweb+r-mode))
 ;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.[rR]md\\'" . poly-markdown+r-mode))
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.rapport\\'" . poly-rapport-mode))
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.[rR]html\\'" . poly-html+r-mode))
