@@ -562,7 +562,7 @@ list_templates <-
                    :from-to
                    '(("latex" "\\.\\(r?tex\\|rnw\\)\\'" "tex" "LaTeX" "Rscript -e \"knitr::knit('%i', output='%o')\"")
                      ("html" "\\.r?x?html?\\'" "html" "HTML" "Rscript -e \"knitr::knit('%i', output='%o')\"")
-                     ("markdown" "\\.r?md]\\'" "md" "Markdown" "Rscript -e \"knitr::knit('%i', output='%o')\"")
+                     ("markdown" "\\.[rR]?md\\'" "md" "Markdown" "Rscript -e \"knitr::knit('%i', output='%o')\"")
                      ("rst" "\\.rst" "rst" "ReStructuredText" "Rscript -e \"knitr::knit('%i', output='%o')\"")
                      ("brew" "\\.r?brew\\'" "brew" "Brew" "Rscript -e \"knitr::knit('%i', output='%o')\"")
                      ("asciidoc" "\\.asciidoc\\'" "txt" "AsciiDoc" "Rscript -e \"knitr::knit('%i', output='%o')\"")
@@ -581,7 +581,7 @@ list_templates <-
                       :from-to
                       '(("latex" "\\.\\(r?tex\\|rnw\\)\\'" "tex" "LaTeX" "knitr::knit('%I', output='%O')")
                         ("html" "\\.[xX]?html?\\'" "html" "HTML" "knitr::knit('%I', output='%O')")
-                        ("markdown" "\\.r?md]\\'" "md" "Markdown" "knitr::knit('%I', output='%O')")
+                        ("markdown" "\\.[rR]?md\\'" "md" "Markdown" "knitr::knit('%I', output='%O')")
                         ("rst" "\\.rst\\'" "rst" "ReStructuredText" "knitr::knit('%I', output='%O')")
                         ("brew" "\\.r?brew]\\'" "brew" "Brew" "knitr::knit('%I', output='%O')")
                         ("asciidoc" "\\.r?asciidoc\\'" "txt" "AsciiDoc" "knitr::knit('%I', output='%O')")
