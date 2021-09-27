@@ -96,8 +96,9 @@ templates."
 (define-polymode poly-markdown+r-mode poly-markdown-mode :lighter " PM-Rmd"
   :innermodes '(:inherit poly-r-markdown-inline-code-innermode))
 ;;;###autoload (autoload 'poly-gfm+r-mode "poly-R")
-(define-polymode poly-gfm+r-mode poly-gfm-mode :lighter " PGFM-Rmd"
-  :innermodes '(:inherit poly-r-markdown-inline-code-innermode))
+(define-polymode poly-gfm+r-mode poly-markdown+r-mode 
+  :lighter " PGFM-Rmd"
+  :hostmode 'poly-gfm-hostmode)
 
 (defvar poly-r--rmarkdown-template-command
   "
@@ -229,7 +230,6 @@ list_templates <-
      :filter poly-r-rmarkdown-templates-menu)))
 
 (define-key poly-markdown+r-mode-map (kbd "M-n M-m") #'poly-r-rmarkdown-create-from-template)
-(define-key poly-gfm+r-mode-map (kbd "M-n M-m") #'poly-r-rmarkdown-create-from-template)
 
 
 ;; RAPPORT
@@ -469,11 +469,6 @@ list_templates <-
 (polymode-register-exporter poly-r-markdown-exporter nil
                             poly-markdown+r-polymode)
 
-(polymode-register-exporter poly-r-markdown-ess-exporter nil
-                            poly-gfm+r-polymode)
-(polymode-register-exporter poly-r-markdown-exporter nil
-                            poly-gfm+r-polymode)
-
 
 ;;; Bookdown
 
@@ -521,7 +516,6 @@ list_templates <-
   :type 'object)
 
 (polymode-register-exporter poly-r-bookdown-ess-exporter nil poly-markdown+r-polymode)
-(polymode-register-exporter poly-r-bookdown-ess-exporter nil poly-gfm+r-polymode)
 
 
 ;; Shiny Rmd
