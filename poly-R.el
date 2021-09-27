@@ -51,33 +51,6 @@
   :group 'poly-R
   :type 'object)
 
-;;;###autoload
-(defun poly-r-set-markdown-flavour (&optional varname value)
-  "Flavour of markdown to use in Rmarkdown documents.
-\"GFM\" or \"gfm\" sets it to github-flavoured-markdown. Any
-other value uses standard markdown."
-  (set-default varname value)
-  (if (string-equal "gfm" (downcase value))
-      (add-to-list 'auto-mode-alist '("\\.[rR]md\\'" . poly-gfm+r-mode))
-    (add-to-list 'auto-mode-alist '("\\.[rR]md\\'" . poly-markdown+r-mode))))
-
-(defcustom poly-r-markdown-flavour "standard"
-  "Flavour of markdown to use in Rmarkdown documents.
-\"GFM\" or \"gfm\" sets it to github-flavoured-markdown. Any
-other value uses standard markdown.
-
-To set this value from elisp, use:
-
-(poly-r-set-markdown-flavour 'poly-r-markdown-flavour \"gfm\")
-
-or
-
-(poly-r-set-markdown-flavour 'poly-r-markdown-flavour \"standard\")"
-  :type 'string
-  :set #'poly-r-set-markdown-flavour
-  :group 'poly-R
-  :initialize #'custom-initialize-set)
-
 
 ;; NOWEB
 (require 'poly-noweb)
