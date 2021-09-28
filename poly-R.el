@@ -97,7 +97,7 @@ templates."
   :innermodes '(:inherit poly-r-markdown-inline-code-innermode))
 ;;;###autoload (autoload 'poly-gfm+r-mode "poly-R")
 (define-polymode poly-gfm+r-mode poly-markdown+r-mode 
-  :lighter " PGFM-Rmd"
+  :lighter " PM-Rmd(gfm)"
   :hostmode 'poly-gfm-hostmode)
 
 (defvar poly-r--rmarkdown-template-command
