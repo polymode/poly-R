@@ -405,6 +405,12 @@ list_templates <-
     (command "Rscript -e \"rmarkdown::render('%i', output_format = 'all')\"")
     (output-file #'pm--rmarkdown-output-file-sniffer)))
 
+(defun pm--rmarkdown-shell-default-selector (action &rest _ignore)
+  (cl-case action
+    (doc "DEFAULT")
+    (command "Rscript -e \"rmarkdown::render('%i', output_format = NULL)\"")
+    (output-file #'pm--rmarkdown-output-file-sniffer)))
+
 (define-obsolete-variable-alias 'pm-exporter/Rmarkdown 'poly-r-markdown-exporter "v0.2")
 (defcustom poly-r-markdown-exporter
   (pm-shell-exporter :name "Rmarkdown"
@@ -413,6 +419,7 @@ list_templates <-
                         "Rscript -e \"rmarkdown::render('%i', output_format = '%t', output_file = '%o')\""))
                      :to
                      '(("auto" . pm--rmarkdown-shell-auto-selector)
+                       ("default" . pm--rmarkdown-shell-default-selector)
                        ("html" "html" "html document" "html_document")
                        ("pdf" "pdf" "pdf document" "pdf_document")
                        ("word" "docx" "word document" "word_document")
@@ -435,6 +442,14 @@ list_templates <-
     (command "rmarkdown::render('%I', output_format = 'all', knit_root_dir=getwd())")
     (output-file #'pm--rmarkdown-output-file-from-.Last.value)))
 
+(defun pm--rmarkdown-callback-default-selector (action &rest _ignore)
+  (cl-case action
+    (doc "DEFAULT")
+    ;; last file is not auto-detected unless we cat new line
+    (command "rmarkdown::render('%I', output_format = NULL, knit_root_dir=getwd())")
+    (output-file #'pm--rmarkdown-output-file-from-.Last.value)))
+
+
 (define-obsolete-variable-alias 'pm-exporter/Rmarkdown-ESS 'poly-r-markdown-ess-exporter "v0.2")
 (defcustom poly-r-markdown-ess-exporter
   (pm-callback-exporter :name "Rmarkdown-ESS"
@@ -445,6 +460,7 @@ list_templates <-
                         '(("auto" . pm--rmarkdown-callback-auto-selector)
                           ("html" "html" "html document" "html_document")
                           ("pdf" "pdf" "pdf document" "pdf_document")
+                          ("default" . pm--rmarkdown-callback-default-selector)
                           ("word" "docx" "word document" "word_document")
                           ("md" "md" "md document" "md_document")
                           ("ioslides" "html" "ioslides presentation" "ioslides_presentation")
