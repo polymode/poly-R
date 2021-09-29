@@ -48,7 +48,7 @@
                :hostmode 'pm-host/R
                :innermodes '(pm-inner/fundamental))
   "Root polymode with R host intended to be inherited from."
-  :group 'polymodes
+  :group 'poly-R
   :type 'object)
 
 
@@ -95,6 +95,10 @@ templates."
 ;;;###autoload (autoload 'poly-markdown+r-mode "poly-R")
 (define-polymode poly-markdown+r-mode poly-markdown-mode :lighter " PM-Rmd"
   :innermodes '(:inherit poly-r-markdown-inline-code-innermode))
+;;;###autoload (autoload 'poly-gfm+r-mode "poly-R")
+(define-polymode poly-gfm+r-mode poly-markdown+r-mode 
+  :lighter " PM-Rmd(gfm)"
+  :hostmode 'poly-gfm-hostmode)
 
 (defvar poly-r--rmarkdown-template-command
   "
