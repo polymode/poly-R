@@ -409,6 +409,12 @@ list_templates <-
     (command "Rscript -e \"rmarkdown::render('%i', output_format = 'all')\"")
     (output-file #'pm--rmarkdown-output-file-sniffer)))
 
+(defun pm--rmarkdown-shell-default-selector (action &rest _ignore)
+  (cl-case action
+    (doc "DEFAULT")
+    (command "Rscript -e \"rmarkdown::render('%i', output_format = NULL)\"")
+    (output-file #'pm--rmarkdown-output-file-sniffer)))
+
 (define-obsolete-variable-alias 'pm-exporter/Rmarkdown 'poly-r-markdown-exporter "v0.2")
 (defcustom poly-r-markdown-exporter
   (pm-shell-exporter :name "Rmarkdown"
@@ -417,6 +423,7 @@ list_templates <-
                         "Rscript -e \"rmarkdown::render('%i', output_format = '%t', output_file = '%o')\""))
                      :to
                      '(("auto" . pm--rmarkdown-shell-auto-selector)
+                       ("default" . pm--rmarkdown-shell-default-selector)
                        ("html" "html" "html document" "html_document")
                        ("pdf" "pdf" "pdf document" "pdf_document")
                        ("word" "docx" "word document" "word_document")
@@ -439,6 +446,14 @@ list_templates <-
     (command "rmarkdown::render('%I', output_format = 'all', knit_root_dir=getwd())")
     (output-file #'pm--rmarkdown-output-file-from-.Last.value)))
 
+(defun pm--rmarkdown-callback-default-selector (action &rest _ignore)
+  (cl-case action
+    (doc "DEFAULT")
+    ;; last file is not auto-detected unless we cat new line
+    (command "rmarkdown::render('%I', output_format = NULL, knit_root_dir=getwd())")
+    (output-file #'pm--rmarkdown-output-file-from-.Last.value)))
+
+
 (define-obsolete-variable-alias 'pm-exporter/Rmarkdown-ESS 'poly-r-markdown-ess-exporter "v0.2")
 (defcustom poly-r-markdown-ess-exporter
   (pm-callback-exporter :name "Rmarkdown-ESS"
@@ -449,6 +464,7 @@ list_templates <-
                         '(("auto" . pm--rmarkdown-callback-auto-selector)
                           ("html" "html" "html document" "html_document")
                           ("pdf" "pdf" "pdf document" "pdf_document")
+                          ("default" . pm--rmarkdown-callback-default-selector)
                           ("word" "docx" "word document" "word_document")
                           ("md" "md" "md document" "md_document")
                           ("ioslides" "html" "ioslides presentation" "ioslides_presentation")
@@ -566,7 +582,7 @@ list_templates <-
                    :from-to
                    '(("latex" "\\.\\(r?tex\\|rnw\\)\\'" "tex" "LaTeX" "Rscript -e \"knitr::knit('%i', output='%o')\"")
                      ("html" "\\.r?x?html?\\'" "html" "HTML" "Rscript -e \"knitr::knit('%i', output='%o')\"")
-                     ("markdown" "\\.r?md]\\'" "md" "Markdown" "Rscript -e \"knitr::knit('%i', output='%o')\"")
+                     ("markdown" "\\.[rR]?md\\'" "md" "Markdown" "Rscript -e \"knitr::knit('%i', output='%o')\"")
                      ("rst" "\\.rst" "rst" "ReStructuredText" "Rscript -e \"knitr::knit('%i', output='%o')\"")
                      ("brew" "\\.r?brew\\'" "brew" "Brew" "Rscript -e \"knitr::knit('%i', output='%o')\"")
                      ("asciidoc" "\\.asciidoc\\'" "txt" "AsciiDoc" "Rscript -e \"knitr::knit('%i', output='%o')\"")
@@ -585,7 +601,7 @@ list_templates <-
                       :from-to
                       '(("latex" "\\.\\(r?tex\\|rnw\\)\\'" "tex" "LaTeX" "knitr::knit('%I', output='%O')")
                         ("html" "\\.[xX]?html?\\'" "html" "HTML" "knitr::knit('%I', output='%O')")
-                        ("markdown" "\\.r?md]\\'" "md" "Markdown" "knitr::knit('%I', output='%O')")
+                        ("markdown" "\\.[rR]?md\\'" "md" "Markdown" "knitr::knit('%I', output='%O')")
                         ("rst" "\\.rst\\'" "rst" "ReStructuredText" "knitr::knit('%I', output='%O')")
                         ("brew" "\\.r?brew]\\'" "brew" "Brew" "knitr::knit('%I', output='%O')")
                         ("asciidoc" "\\.r?asciidoc\\'" "txt" "AsciiDoc" "knitr::knit('%I', output='%O')")
