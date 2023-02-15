@@ -83,7 +83,7 @@ templates."
 
 (define-innermode poly-r-markdown-inline-code-innermode poly-markdown-inline-code-innermode
   :mode 'ess-r-mode
-  :head-matcher (cons "[^`]\\(`{?[rR]}?\\)[ \t]" 1))
+  :head-matcher (cons "\\(?:^\\|[^`]\\)\\(`[rR][ #]\\)" 1))
 
 (define-obsolete-variable-alias 'pm-poly/markdown+R 'poly-markdown+r-polymode "v0.2")
 (define-obsolete-variable-alias 'pm-poly/markdown+r 'poly-markdown+r-polymode "v0.2")
