@@ -1,0 +1,3 @@
+`r "test 'r ' inline code"`
+`r#"test 'r#' inline code"`
+`rsync # test non-R code`
