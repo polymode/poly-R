@@ -81,6 +81,14 @@ templates."
   :type '(repeat string)
   :group 'poly-R)
 
+(defcustom poly-r-can-eval-in-background t
+  "Whether poly-R can use background commands.
+This is similar to `ess-can-eval-in-background' but limited to
+poly-R."
+  :type 'boolean
+  :group 'poly-R)
+
+
 (define-innermode poly-r-markdown-inline-code-innermode poly-markdown-inline-code-innermode
   :mode 'ess-r-mode
   :head-matcher (cons "\\(?:^\\|[^`]\\)\\(`r[ #]\\)" 1))
@@ -227,7 +235,8 @@ list_templates <-
   '("RMarkdown"
     ("Templates"
      ;; TODO: Use `ess-get-next-available-bg-process' after release
-     :active (and ess-can-eval-in-background
+     :active (and poly-r-can-eval-in-background
+                  ess-can-eval-in-background
                   (ess-get-next-available-process "R" t))
      :filter poly-r-rmarkdown-templates-menu)))
 
