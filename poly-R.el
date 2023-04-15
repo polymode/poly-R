@@ -170,7 +170,7 @@ list_templates <-
          (templates (process-get proc :rmarkdown-templates)))
     (unless templates
       (setq templates (ignore-errors
-                        (poly-r-rmarkdown-templates proc 0.05)))
+                        (poly-r-rmarkdown-templates proc 0.2)))
       (when (< 2000 (length templates))
         (process-put proc :rmarkdown-templates templates)))
     (mapcar (lambda (el)
