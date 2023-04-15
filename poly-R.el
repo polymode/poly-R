@@ -226,7 +226,9 @@ list_templates <-
   "Menu for poly-r+markdown-mode"
   '("RMarkdown"
     ("Templates"
-     :active (ess-get-next-available-process "R" t)
+     ;; TODO: Use `ess-get-next-available-bg-process' after release
+     :active (and ess-can-eval-in-background
+                  (ess-get-next-available-process "R" t))
      :filter poly-r-rmarkdown-templates-menu)))
 
 (define-key poly-markdown+r-mode-map (kbd "M-n M-m") #'poly-r-rmarkdown-create-from-template)
