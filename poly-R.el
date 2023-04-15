@@ -147,7 +147,7 @@ list_templates <-
   }\n
  list_templates(%s)})\n")
 
-(defun poly-r-rmarkdown-templates (&optional proc)
+(defun poly-r-rmarkdown-templates (&optional proc timeout)
   (let* ((ess-dialect "R")
          (proc (or proc (ess-get-next-available-process "R" t)))
          (user-dirs (if poly-r-rmarkdown-template-dirs
@@ -157,7 +157,7 @@ list_templates <-
                                            "\", \""))
                       "c()"))
          (cmd (format poly-r--rmarkdown-template-command user-dirs)))
-    (with-current-buffer (ess-command cmd nil nil nil nil proc)
+    (with-current-buffer (ess-command cmd nil nil nil nil proc nil timeout)
       (goto-char (point-min))
       (if (save-excursion (re-search-forward "\\+ Error" nil t))
           (error "%s" (buffer-string))
@@ -169,7 +169,8 @@ list_templates <-
   (let* ((proc (ess-get-next-available-process "R" t))
          (templates (process-get proc :rmarkdown-templates)))
     (unless templates
-      (setq templates (poly-r-rmarkdown-templates proc))
+      (setq templates (ignore-errors
+                        (poly-r-rmarkdown-templates proc 0.05)))
       (when (< 2000 (length templates))
         (process-put proc :rmarkdown-templates templates)))
     (mapcar (lambda (el)
