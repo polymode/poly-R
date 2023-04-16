@@ -81,6 +81,14 @@ templates."
   :type '(repeat string)
   :group 'poly-R)
 
+(defcustom poly-r-can-eval-in-background t
+  "Whether poly-R can use background commands.
+This is similar to `ess-can-eval-in-background' but limited to
+poly-R."
+  :type 'boolean
+  :group 'poly-R)
+
+
 (define-innermode poly-r-markdown-inline-code-innermode poly-markdown-inline-code-innermode
   :mode 'ess-r-mode
   :head-matcher (cons "\\(?:^\\|[^`]\\)\\(`r[ #]\\)" 1))
@@ -139,7 +147,7 @@ list_templates <-
   }\n
  list_templates(%s)})\n")
 
-(defun poly-r-rmarkdown-templates (&optional proc)
+(defun poly-r-rmarkdown-templates (&optional proc timeout)
   (let* ((ess-dialect "R")
          (proc (or proc (ess-get-next-available-process "R" t)))
          (user-dirs (if poly-r-rmarkdown-template-dirs
@@ -149,7 +157,7 @@ list_templates <-
                                            "\", \""))
                       "c()"))
          (cmd (format poly-r--rmarkdown-template-command user-dirs)))
-    (with-current-buffer (ess-command cmd nil nil nil nil proc)
+    (with-current-buffer (ess-command cmd nil nil nil nil proc nil timeout)
       (goto-char (point-min))
       (if (save-excursion (re-search-forward "\\+ Error" nil t))
           (error "%s" (buffer-string))
@@ -161,7 +169,8 @@ list_templates <-
   (let* ((proc (ess-get-next-available-process "R" t))
          (templates (process-get proc :rmarkdown-templates)))
     (unless templates
-      (setq templates (poly-r-rmarkdown-templates proc))
+      (setq templates (ignore-errors
+                        (poly-r-rmarkdown-templates proc 0.2)))
       (when (< 2000 (length templates))
         (process-put proc :rmarkdown-templates templates)))
     (mapcar (lambda (el)
@@ -226,7 +235,10 @@ list_templates <-
   "Menu for poly-r+markdown-mode"
   '("RMarkdown"
     ("Templates"
-     :active (ess-get-next-available-process "R" t)
+     ;; TODO: Use `ess-get-next-available-bg-process' after release
+     :active (and poly-r-can-eval-in-background
+                  ess-can-eval-in-background
+                  (ess-get-next-available-process "R" t))
      :filter poly-r-rmarkdown-templates-menu)))
 
 (define-key poly-markdown+r-mode-map (kbd "M-n M-m") #'poly-r-rmarkdown-create-from-template)
